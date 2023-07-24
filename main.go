@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"git.isfk.cn/isfk/protoc-gen-echo/example"
+	"github.com/isfk/protoc-gen-echo/example"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/exp/slog"
 )

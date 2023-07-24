@@ -3,7 +3,7 @@ module git.isfk.cn/isfk/protoc-gen-echo-test
 go 1.20
 
 require (
-	git.isfk.cn/isfk/protoc-gen-echo v0.1.0
+	github.com/isfk/protoc-gen-echo v0.1.0
 	github.com/labstack/echo/v4 v4.11.1
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 )
