@@ -1,1 +1,1 @@
-# isfk/test
+# isfk/protoc-gen-echo-test

@@ -1,63 +1,40 @@
 package main
 
 import (
+	"os"
+
+	"git.isfk.cn/isfk/protoc-gen-echo/example"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/exp/slog"
 )
 
-// 定义接口 interface
-type IExampleServiceEchoHandler interface {
-	Hello(echo.Context) error
-	Say(echo.Context) error
+type myHandler struct {
+	example.ExampleService_EchoClientHandlerImpl
+	log *slog.Logger
 }
 
-// 定义接口
-type ExampleServiceEchoHandler struct {
-	handler ExampleServiceHandler
+func NewMyHandler(log *slog.Logger) *myHandler {
+	return &myHandler{log: log}
 }
-
-func NewExampleServiceEchoHandler(handler ExampleServiceHandler) IExampleServiceEchoHandler {
-	return &ExampleServiceEchoHandler{
-		handler: handler,
-	}
-}
-
-func (h ExampleServiceEchoHandler) Hello(c echo.Context) error {
-	// return h.handler.hello(c)
-	return nil
-}
-
-func (h ExampleServiceEchoHandler) Say(c echo.Context) error {
-	// return h.handler.say(c)
-	return nil
-}
-
-func ExampleServiceRegisterEchoRoutes(e *echo.Echo) {
-	// h := NewExampleServiceEchoHandler(NewExampleServiceHandler())
-	// e.GET("/hello", h.Hello)
-	// e.GET("/say", h.Say)
-}
-
-//
-
-type (
-	ExampleServiceHandler struct{}
-)
-
-// func (e *ExampleServiceHandler) hello(c echo.Context) error {
-// 	return c.JSON(http.StatusOK, "hello jack")
-// }
-
-// func (e *ExampleServiceHandler) say(c echo.Context) error {
-// 	return c.JSON(http.StatusOK, "say it")
-// }
 
 func main() {
 	e := echo.New()
-	ExampleServiceRegisterEchoRoutes(e)
-	e.GET("/abc", func(c echo.Context) error {
-		return nil
-	})
-	if err := e.Start(":1111"); err != nil {
-		panic(err)
-	}
+
+	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{}))
+
+	handler := example.NewExampleService_EchoServerHandler(NewMyHandler(log))
+
+	e.GET("/hello", handler.Hello)
+	e.GET("/say", handler.Say)
+	e.Start(":1111")
+}
+
+func (h myHandler) Hello(args *example.HelloRequest) (*example.HelloResponse, error) {
+	h.log.Info("打印参数", slog.Any("args", args))
+	return &example.HelloResponse{Msg: args.Name}, nil
+}
+
+func (h myHandler) Say(args *example.SayRequest) (*example.SayResponse, error) {
+	h.log.Info("打印参数", slog.Any("args", args))
+	return &example.SayResponse{Msg: args.Name}, nil
 }
